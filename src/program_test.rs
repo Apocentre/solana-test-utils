@@ -148,7 +148,7 @@ impl ProgramTest {
     &mut self,
     mint_keypair: &Keypair,
     mint_authority: &Keypair,
-    recipient_ata: &Pubkey,
+    recipient: &Pubkey,
   ) {
     // 1. create a new Mint account with 0 decimals
     self.create_mint(
@@ -158,15 +158,19 @@ impl ProgramTest {
       0
     ).await;
 
-    // 2. mint 1 token into the recipient associated token account
+    // 2. create a new associated token account
+    let mint_account = mint_keypair.pubkey();
+    self.create_associated_account(recipient, &mint_account).await;
+
+    // 3. mint 1 token into the recipient associated token account
     self.mint_tokens(
       &mint_keypair.pubkey(),
       &mint_authority,
-      recipient_ata,
+      &Self::get_associated_token_address(recipient, &mint_account),
       1
     ).await;
 
-    // 3. disable future minting by setting the mint authority to none
+    // 4. disable future minting by setting the mint authority to none
     self.set_mint_authority(&mint_keypair, &mint_authority).await;
   }
 
