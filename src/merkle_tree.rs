@@ -26,4 +26,8 @@ impl MerkleTree {
   pub fn root(&self) -> Option<[u8; 32]> {
     self.tree.root()
   }
+
+  pub fn root_hex(&self) -> Option<String> {
+    self.tree.root_hex()
+  }
 }
