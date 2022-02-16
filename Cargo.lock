@@ -1261,12 +1261,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "merkle_light"
-version = "0.3.1"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2522fe9e6a71447b7acc0841bced2517976f982e7ea8d494870eb71464ebc269"
-
-[[package]]
 name = "mime"
 version = "0.3.16"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1799,6 +1793,15 @@ dependencies = [
  "untrusted",
  "web-sys",
  "winapi",
+]
+
+[[package]]
+name = "rs_merkle"
+version = "1.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "ca38db72b771218df4ad0840e2b82ab8f36d9bbce2c0d73fb6ff061c4ae19c1b"
+dependencies = [
+ "sha2",
 ]
 
 [[package]]
@@ -2492,12 +2495,12 @@ dependencies = [
 
 [[package]]
 name = "solana-test-utils"
-version = "0.1.7"
+version = "0.1.8"
 dependencies = [
  "bincode",
  "borsh",
  "futures",
- "merkle_light",
+ "rs_merkle",
  "solana-program-test",
  "solana-sdk",
  "spl-associated-token-account",
