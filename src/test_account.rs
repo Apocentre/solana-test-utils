@@ -14,8 +14,8 @@ pub struct TestAccount {
 }
 
 impl TestAccount {
-  pub async fn new(pt: &mut ProgramTest) -> Self {
-    let participants: Vec<Keypair> = (0..10_i32)
+  pub async fn new(pt: &mut ProgramTest, count: i32) -> Self {
+    let participants: Vec<Keypair> = (0..count)
       .map(|_| Keypair::new())
       .collect();
       

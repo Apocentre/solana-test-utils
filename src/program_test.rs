@@ -11,6 +11,10 @@ use solana_sdk::{
   transaction::Transaction,
   instruction::Instruction,
 };
+use spl_associated_token_account::{
+  create_associated_token_account,
+  get_associated_token_address,
+};
 use solana_program_test::{ProgramTestContext};
 use crate::{
   time::{get_clock},
@@ -115,6 +119,29 @@ impl ProgramTest {
     self.process_transaction(&instructions, Some(&[mint_keypair]))
       .await
       .unwrap();
+  }
+
+  pub async fn create_associated_account(
+    &mut self,
+    wallet_address: &Pubkey,
+    spl_token_mint_address: &Pubkey,
+  ) {
+    let ix = create_associated_token_account(
+      &self.context.payer.pubkey(),
+      wallet_address,
+      spl_token_mint_address
+    );
+
+    self.process_transaction(&[ix], None)
+      .await
+      .unwrap();
+  }
+
+  pub fn get_associated_token_address(
+    wallet_address: &Pubkey, 
+    spl_token_mint_address: &Pubkey
+  ) -> Pubkey {
+    get_associated_token_address(wallet_address, spl_token_mint_address)
   }
 
   pub async fn create_nft(
