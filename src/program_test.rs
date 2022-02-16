@@ -90,6 +90,7 @@ impl ProgramTest {
     mint_keypair: &Keypair,
     mint_authority: &Pubkey,
     freeze_authority: Option<&Pubkey>,
+    decimals: u8,
   ) {
     let mint_rent = self.rent.minimum_balance(spl_token::state::Mint::LEN);
 
@@ -106,12 +107,60 @@ impl ProgramTest {
         &mint_keypair.pubkey(),
         mint_authority,
         freeze_authority,
-        0,
+        decimals,
       )
       .unwrap(),
     ];
 
     self.process_transaction(&instructions, Some(&[mint_keypair]))
+      .await
+      .unwrap();
+  }
+
+  pub async fn create_nft(
+    &mut self,
+    mint_keypair: &Keypair,
+    mint_authority: &Keypair,
+    recipient: &Pubkey,
+  ) {
+    // 1. create a new Mint account with 0 decimals
+    self.create_mint(
+      mint_keypair,
+      &mint_authority.pubkey(),
+      None,
+      0
+    ).await;
+
+    // 2. mint 1 token into the recipient account
+    self.mint_tokens(
+      &mint_keypair.pubkey(),
+      &mint_authority,
+      recipient,
+      1
+    ).await;
+
+    // 3. disable future minting by setting the mint authority to none
+    self.set_mint_authority(&mint_keypair, &mint_authority).await;
+  }
+
+  pub async fn set_mint_authority(
+    &mut self,
+    mint_keypair: &Keypair,
+    mint_authority: &Keypair,
+  ) {
+    let instructions = [
+      spl_token::instruction::set_authority(
+        &spl_token::id(),
+        &mint_keypair.pubkey(),
+        None,
+        spl_token::instruction::AuthorityType::MintTokens,
+        &mint_authority.pubkey(),
+        &[&mint_authority.pubkey()]
+      )
+      .unwrap(),
+    ];
+
+    self.process_transaction(&instructions, Some(&[mint_authority]))
       .await
       .unwrap();
   }
