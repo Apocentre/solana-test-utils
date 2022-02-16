@@ -148,7 +148,7 @@ impl ProgramTest {
     &mut self,
     mint_keypair: &Keypair,
     mint_authority: &Keypair,
-    recipient: &Pubkey,
+    recipient_ata: &Pubkey,
   ) {
     // 1. create a new Mint account with 0 decimals
     self.create_mint(
@@ -158,11 +158,11 @@ impl ProgramTest {
       0
     ).await;
 
-    // 2. mint 1 token into the recipient account
+    // 2. mint 1 token into the recipient associated token account
     self.mint_tokens(
       &mint_keypair.pubkey(),
       &mint_authority,
-      recipient,
+      recipient_ata,
       1
     ).await;
 
