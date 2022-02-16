@@ -1,8 +1,8 @@
 use solana_sdk::keccak::hashv;
 use std::hash::Hasher;
-use merkletree::{
+use std::iter::FromIterator;
+use merkle_light::{
   merkle::MerkleTree as OrigMerkleTree,
-  store::VecStore,
   hash::{Algorithm}
 };
 
@@ -36,13 +36,13 @@ impl Algorithm<[u8; 32]> for SolanaHasher {
 }
 
 pub struct MerkleTree {
-  tree: OrigMerkleTree<[u8; 32], SolanaHasher, VecStore<[u8; 32]>>
+  tree: OrigMerkleTree<[u8; 32], SolanaHasher>
 }
 
 impl MerkleTree {
   pub fn new(leaves: Vec<[u8; 32]>) -> Self {
     Self {
-      tree: OrigMerkleTree::from_data(leaves).unwrap(),
+      tree: OrigMerkleTree::from_iter(leaves),
     }
   }
 
