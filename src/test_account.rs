@@ -1,0 +1,39 @@
+use futures::{stream, StreamExt};
+use std::sync::{Arc, Mutex};
+use solana_sdk::{
+  signature::{Keypair, Signer},
+  native_token::sol_to_lamports,
+};
+use crate::{
+  program_test::ProgramTest,
+};
+
+#[derive(Default)]
+pub struct TestAccount {
+  pub participants: Vec<Keypair>,
+}
+
+impl TestAccount {
+  pub async fn new(pt: &mut ProgramTest) -> Self {
+    let participants: Vec<Keypair> = (0..10_i32)
+      .map(|_| Keypair::new())
+      .collect();
+      
+    // fund the newly created accounts
+    let pt = Arc::new(Mutex::new(pt));
+    stream::iter(participants.iter())
+      .for_each(|account| {
+        let pt = Arc::clone(&pt);
+
+        async move {
+          let mut lock = pt.lock().unwrap();
+          lock.transfer_sol(&account.pubkey(), sol_to_lamports(1_f64)).await
+        }
+      })
+      .await;
+
+    Self {
+      participants,
+    }
+  }
+}

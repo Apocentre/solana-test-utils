@@ -2586,10 +2586,11 @@ dependencies = [
 
 [[package]]
 name = "solana-test-utils"
-version = "0.1.2"
+version = "0.1.3"
 dependencies = [
  "bincode",
  "borsh",
+ "futures",
  "merkletree",
  "solana-program-test",
  "solana-sdk",
