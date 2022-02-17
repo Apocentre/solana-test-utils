@@ -43,7 +43,7 @@ impl ProgramTest {
     }
   }
 
-  pub async fn add_program(
+  pub fn add_program(
     program_test: &mut solana_program_test::ProgramTest,
     program_name: &str,
     program_id: Pubkey,
