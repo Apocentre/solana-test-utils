@@ -1,3 +1,4 @@
+use solana_program_runtime::invoke_context::ProcessInstructionWithContext;
 use solana_sdk::{
   system_program,
   rent::{Rent},
@@ -40,6 +41,15 @@ impl ProgramTest {
       payer,
       next_id: 0,
     }
+  }
+
+  pub async fn add_program(
+    program_test: &mut solana_program_test::ProgramTest,
+    program_name: &str,
+    program_id: Pubkey,
+    process_instruction: Option<ProcessInstructionWithContext>
+  ) {
+    program_test.add_program(program_name, program_id, process_instruction);
   }
 
   pub async fn process_transaction(

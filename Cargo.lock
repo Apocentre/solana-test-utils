@@ -2495,12 +2495,13 @@ dependencies = [
 
 [[package]]
 name = "solana-test-utils"
-version = "0.1.10"
+version = "0.1.11"
 dependencies = [
  "bincode",
  "borsh",
  "futures",
  "rs_merkle",
+ "solana-program-runtime",
  "solana-program-test",
  "solana-sdk",
  "spl-associated-token-account",
