@@ -22,8 +22,6 @@ use crate::{
   tools::{clone_keypair, map_transaction_error}
 };
 
-pub use spl_associated_token_account;
-
 pub struct ProgramTest {
   pub context: ProgramTestContext,
   pub rent: Rent,
