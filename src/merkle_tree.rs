@@ -1,5 +1,8 @@
 use solana_sdk::keccak::hashv;
-use rs_merkle::{Hasher, MerkleTree as MerkleTreeLib};
+use rs_merkle::{
+  Hasher,
+  MerkleTree as MerkleTreeLib,
+};
 
 #[derive(Clone)]
 pub struct SolanaHasher;
@@ -29,6 +32,10 @@ impl MerkleTree {
 
   pub fn root_hex(&self) -> Option<String> {
     self.tree.root_hex()
+  }
+
+  pub fn proof(&self, indices_to_prove: &[usize]) -> Vec<[u8; 32]> {
+    self.tree.proof(&indices_to_prove).proof_hashes().to_vec()
   }
 
   /// Note this is the exact same logic that will be used in the on-chain program as well
