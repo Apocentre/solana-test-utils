@@ -11,6 +11,8 @@ impl Hasher for SolanaHasher {
   type Hash = [u8; 32];
 
   fn hash(data: &[u8]) -> Self::Hash {
+    println!("hash data {:?}", data);
+    println!("hash {:?}", hashv(&[data]).0);
     hashv(&[data]).0
   }
 }
