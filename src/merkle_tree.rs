@@ -20,9 +20,11 @@ pub struct MerkleTree {
 }
 
 impl MerkleTree {
-  pub fn new(leaves: &mut Vec<[u8; 32]>) -> Self {
+  pub fn new(mut leaves: Vec<[u8; 32]>) -> Self {
     // sort the leaves first
+    println!("before ----> {:?}", leaves);
     leaves.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    println!("after ----> {:?}", leaves);
     
     Self {
       tree: MerkleTreeLib::<SolanaHasher>::from_leaves(&leaves)
