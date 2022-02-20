@@ -44,7 +44,7 @@ impl<'a> Spl<'a> {
     token_account: &Pubkey,
     amount: u64,
   ) {
-    let mint_instruction = spl_token::instruction::mint_to(
+    let ix = spl_token::instruction::mint_to(
       &spl_token::id(),
       token_mint,
       token_account,
@@ -54,7 +54,29 @@ impl<'a> Spl<'a> {
     )
     .unwrap();
 
-    self.program_test.process_transaction(&[mint_instruction], Some(&[token_mint_authority]))
+    self.program_test.process_transaction(&[ix], Some(&[token_mint_authority]))
+      .await
+      .unwrap();
+  }
+
+  pub async fn transfer(
+    &mut self,
+    from: &Pubkey, 
+    to: &Pubkey,
+    authority: &Keypair,
+    amount: u64,
+  ) {
+    let ix = spl_token::instruction::transfer(
+      &spl_token::id(),
+      from,
+      to,
+      &authority.pubkey(),
+      &[&authority.pubkey()],
+      amount,
+    )
+    .unwrap();
+
+    self.program_test.process_transaction(&[ix], Some(&[authority]))
       .await
       .unwrap();
   }
