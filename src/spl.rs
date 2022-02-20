@@ -117,7 +117,7 @@ impl<'a> Spl<'a> {
     &mut self,
     wallet_address: &Pubkey,
     spl_token_mint_address: &Pubkey,
-  ) {
+  ) -> Pubkey {
     let ix = create_associated_token_account(
       &self.program_test.context.payer.pubkey(),
       wallet_address,
@@ -127,6 +127,8 @@ impl<'a> Spl<'a> {
     self.program_test.process_transaction(&[ix], None)
       .await
       .unwrap();
+
+    get_associated_token_address(wallet_address, spl_token_mint_address)
   }
 
   pub fn get_associated_token_address(
