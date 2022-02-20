@@ -11,10 +11,14 @@ impl Hasher for SolanaHasher {
   type Hash = [u8; 32];
 
   fn hash(data: &[u8]) -> Self::Hash {
+    println!("Hash data {:?}", data);
     hashv(&[data]).0
   }
 
   fn concat_and_hash(left: &Self::Hash, right: Option<&Self::Hash>) -> Self::Hash {
+    println!("concat_and_hash left {:?}", left);
+    println!("concat_and_hash right {:?}", right);
+
     match right {
       Some(right) => {
         let mut sorted = vec![];
@@ -26,6 +30,8 @@ impl Hasher for SolanaHasher {
           sorted.append(&mut right.to_vec());
           sorted.append(&mut left.to_vec());
         }
+
+        println!("Sorted {:?}", sorted);
 
         Self::hash(&sorted)
       }
