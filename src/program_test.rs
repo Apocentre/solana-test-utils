@@ -5,16 +5,11 @@ use solana_sdk::{
   system_instruction,
   program_error::ProgramError,
   clock::{Clock},
-  program_pack::Pack,
   pubkey::Pubkey,
   signature::{Keypair, Signer},
   borsh::{try_from_slice_unchecked},
   transaction::Transaction,
   instruction::Instruction,
-};
-use spl_associated_token_account::{
-  create_associated_token_account,
-  get_associated_token_address,
 };
 use solana_program_test::{ProgramTestContext};
 use crate::{
@@ -99,113 +94,6 @@ impl ProgramTest {
     account
   }
 
-  pub async fn create_mint(
-    &mut self,
-    mint_keypair: &Keypair,
-    mint_authority: &Pubkey,
-    freeze_authority: Option<&Pubkey>,
-    decimals: u8,
-  ) {
-    let mint_rent = self.rent.minimum_balance(spl_token::state::Mint::LEN);
-
-    let instructions = [
-      system_instruction::create_account(
-        &self.context.payer.pubkey(),
-        &mint_keypair.pubkey(),
-        mint_rent,
-        spl_token::state::Mint::LEN as u64,
-        &spl_token::id(),
-      ),
-      spl_token::instruction::initialize_mint(
-        &spl_token::id(),
-        &mint_keypair.pubkey(),
-        mint_authority,
-        freeze_authority,
-        decimals,
-      )
-      .unwrap(),
-    ];
-
-    self.process_transaction(&instructions, Some(&[mint_keypair]))
-      .await
-      .unwrap();
-  }
-
-  pub async fn create_associated_account(
-    &mut self,
-    wallet_address: &Pubkey,
-    spl_token_mint_address: &Pubkey,
-  ) {
-    let ix = create_associated_token_account(
-      &self.context.payer.pubkey(),
-      wallet_address,
-      spl_token_mint_address
-    );
-
-    self.process_transaction(&[ix], None)
-      .await
-      .unwrap();
-  }
-
-  pub fn get_associated_token_address(
-    wallet_address: &Pubkey, 
-    spl_token_mint_address: &Pubkey
-  ) -> Pubkey {
-    get_associated_token_address(wallet_address, spl_token_mint_address)
-  }
-
-  pub async fn create_nft(
-    &mut self,
-    mint_keypair: &Keypair,
-    mint_authority: &Keypair,
-    recipient: &Pubkey,
-  ) {
-    // 1. create a new Mint account with 0 decimals
-    self.create_mint(
-      mint_keypair,
-      &mint_authority.pubkey(),
-      None,
-      0
-    ).await;
-
-    // 2. create a new associated token account
-    let mint_account = mint_keypair.pubkey();
-    self.create_associated_account(recipient, &mint_account).await;
-
-    // 3. mint 1 token into the recipient associated token account
-    self.mint_tokens(
-      &mint_keypair.pubkey(),
-      &mint_authority,
-      &Self::get_associated_token_address(recipient, &mint_account),
-      1
-    ).await;
-
-    // 4. disable future minting by setting the mint authority to none
-    self.set_mint_authority(&mint_keypair, &mint_authority).await;
-  }
-
-  pub async fn set_mint_authority(
-    &mut self,
-    mint_keypair: &Keypair,
-    mint_authority: &Keypair,
-  ) {
-    let instructions = [
-      spl_token::instruction::set_authority(
-        &spl_token::id(),
-        &mint_keypair.pubkey(),
-        None,
-        spl_token::instruction::AuthorityType::MintTokens,
-        &mint_authority.pubkey(),
-        &[&mint_authority.pubkey()]
-      )
-      .unwrap(),
-    ];
-
-    self.process_transaction(&instructions, Some(&[mint_authority]))
-      .await
-      .unwrap();
-  }
-
   pub async fn transfer_sol(&mut self, to_account: &Pubkey, lamports: u64) {
     let transfer_ix = system_instruction::transfer(
       &self.payer.pubkey(),
@@ -214,28 +102,6 @@ impl ProgramTest {
     );
 
     self.process_transaction(&[transfer_ix], None)
-      .await
-      .unwrap();
-  }
-
-  pub async fn mint_tokens(
-    &mut self,
-    token_mint: &Pubkey,
-    token_mint_authority: &Keypair,
-    token_account: &Pubkey,
-    amount: u64,
-  ) {
-    let mint_instruction = spl_token::instruction::mint_to(
-      &spl_token::id(),
-      token_mint,
-      token_account,
-      &token_mint_authority.pubkey(),
-      &[],
-      amount,
-    )
-    .unwrap();
-
-    self.process_transaction(&[mint_instruction], Some(&[token_mint_authority]))
       .await
       .unwrap();
   }
