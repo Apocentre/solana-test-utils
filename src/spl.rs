@@ -1,3 +1,4 @@
+use std::sync::{Arc, Mutex};
 use anchor_spl::token::{TokenAccount};
 use anchor_lang::{
   AccountDeserialize,
@@ -16,20 +17,22 @@ use crate::{
   program_test::ProgramTest,
 };
 
-pub struct Spl<'a> {
-  pub program_test: &'a mut ProgramTest,
+pub struct Spl {
+  pub program_test: Arc<Mutex<ProgramTest>>,
 }
 
-impl<'a> Spl<'a> {
-  pub fn new(program_test: &'a mut ProgramTest) -> Self {
+impl Spl {
+  pub fn new(program_test: Arc<Mutex<ProgramTest>>) -> Self {
     Self {
       program_test
     }
   }
 
   pub async fn get_token_account(&mut self, token_account: Pubkey) -> TokenAccount {
-    let account = self
-      .program_test.context
+    let mut lock_pt = self.program_test.lock().unwrap();
+    
+    let account = lock_pt
+      .context
       .banks_client
       .get_account(token_account)
       .await.unwrap().unwrap();
@@ -54,7 +57,8 @@ impl<'a> Spl<'a> {
     )
     .unwrap();
 
-    self.program_test.process_transaction(&[ix], Some(&[token_mint_authority]))
+    let mut lock_pt = self.program_test.lock().unwrap();
+    lock_pt.process_transaction(&[ix], Some(&[token_mint_authority]))
       .await
       .unwrap();
   }
@@ -76,7 +80,8 @@ impl<'a> Spl<'a> {
     )
     .unwrap();
 
-    self.program_test.process_transaction(&[ix], Some(&[authority]))
+    let mut lock_pt = self.program_test.lock().unwrap();
+    lock_pt.process_transaction(&[ix], Some(&[authority]))
       .await
       .unwrap();
   }
@@ -88,11 +93,12 @@ impl<'a> Spl<'a> {
     freeze_authority: Option<&Pubkey>,
     decimals: u8,
   ) {
-    let mint_rent = self.program_test.rent.minimum_balance(spl_token::state::Mint::LEN);
+    let mut lock_pt = self.program_test.lock().unwrap();
+    let mint_rent = lock_pt.rent.minimum_balance(spl_token::state::Mint::LEN);
 
     let instructions = [
       system_instruction::create_account(
-        &self.program_test.context.payer.pubkey(),
+        &lock_pt.context.payer.pubkey(),
         &mint_keypair.pubkey(),
         mint_rent,
         spl_token::state::Mint::LEN as u64,
@@ -108,7 +114,7 @@ impl<'a> Spl<'a> {
       .unwrap(),
     ];
 
-    self.program_test.process_transaction(&instructions, Some(&[mint_keypair]))
+    lock_pt.process_transaction(&instructions, Some(&[mint_keypair]))
       .await
       .unwrap();
   }
@@ -118,13 +124,14 @@ impl<'a> Spl<'a> {
     wallet_address: &Pubkey,
     spl_token_mint_address: &Pubkey,
   ) -> Pubkey {
+    let mut lock_pt = self.program_test.lock().unwrap();
     let ix = create_associated_token_account(
-      &self.program_test.context.payer.pubkey(),
+      &lock_pt.context.payer.pubkey(),
       wallet_address,
       spl_token_mint_address
     );
 
-    self.program_test.process_transaction(&[ix], None)
+    lock_pt.process_transaction(&[ix], None)
       .await
       .unwrap();
 
@@ -185,7 +192,8 @@ impl<'a> Spl<'a> {
       .unwrap(),
     ];
 
-    self.program_test.process_transaction(&instructions, Some(&[mint_authority]))
+    let mut lock_pt = self.program_test.lock().unwrap();
+    lock_pt.process_transaction(&instructions, Some(&[mint_authority]))
       .await
       .unwrap();
   }
