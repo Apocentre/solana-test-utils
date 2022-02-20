@@ -1,5 +1,4 @@
 use solana_sdk::keccak::hashv;
-use std::convert::TryInto;
 use rs_merkle::{
   Hasher,
   MerkleTree as MerkleTreeLib,
@@ -12,28 +11,26 @@ impl Hasher for SolanaHasher {
   type Hash = [u8; 32];
 
   fn hash(data: &[u8]) -> Self::Hash {
-    println!("data ----> {:?}", data);
+    hashv(&[data]).0
+  }
 
-    // let data = data.to_vec();
-    let left: [u8; 32] = data[..32].try_into().unwrap();
-    let right: [u8; 32] = data[32..64].try_into().unwrap();
+  fn concat_and_hash(left: &Self::Hash, right: Option<&Self::Hash>) -> Self::Hash {
+    match right {
+      Some(right) => {
+        let mut sorted = vec![];
 
-    println!("left----> {:?}", data);
-    println!("right ----> {:?}", data);
+        if left <= right {
+          sorted.append(&mut left.to_vec());
+          sorted.append(&mut right.to_vec());
+        } else {
+          sorted.append(&mut right.to_vec());
+          sorted.append(&mut left.to_vec());
+        }
 
-    let mut sorted = vec![];
-
-    if left <= right {
-      sorted.append(&mut left.to_vec());
-      sorted.append(&mut right.to_vec());
-    } else {
-      sorted.append(&mut right.to_vec());
-      sorted.append(&mut left.to_vec());
+        Self::hash(&sorted)
+      }
+      None => *left,
     }
-
-    println!("sorted ----> {:?}", sorted);
-
-    hashv(&[&sorted]).0
   }
 }
 
