@@ -33,7 +33,7 @@ impl Hasher for SolanaHasher {
 
     println!("sorted ----> {:?}", sorted);
 
-    hashv(&[data]).0
+    hashv(&[&sorted]).0
   }
 }
 
