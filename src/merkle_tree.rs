@@ -23,7 +23,7 @@ impl MerkleTree {
   pub fn new(mut leaves: Vec<[u8; 32]>) -> Self {
     // sort the leaves first
     println!("before ----> {:?}", leaves);
-    leaves.sort_by(|a, b| a.partial_cmp(b).unwrap());
+    leaves.sort();
     println!("after ----> {:?}", leaves);
     
     Self {
