@@ -1,6 +1,6 @@
 [package]
 name = "solana-test-utils"
-version = "0.1.38"
+version = "0.1.40"
 edition = "2018"
 authors = ["Pavlos Polianidis <info@apocentre.com>"]
 repository = "https://github.com/Apocentre/solana-safe-math"
