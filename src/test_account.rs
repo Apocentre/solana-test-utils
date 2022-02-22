@@ -38,9 +38,3 @@ impl TestAccount {
     }
   }
 }
-
-impl std::ops::Drop for TestAccount {
-  fn drop(&mut self) {
-    println!("TestAccount  >>>>>>>>>>>>>>>>>>>>>>");
-  }
-}
