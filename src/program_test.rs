@@ -120,3 +120,9 @@ impl ProgramTest {
     get_clock(&mut self.context).await
   }
 }
+
+impl std::ops::Drop for ProgramTest {
+  fn drop(&mut self) {
+    println!("Drop ProgramTest >>>>>>>>>>>>>>>>>>>>>>");
+  }
+}

@@ -199,3 +199,9 @@ impl Spl {
       .unwrap();
   }
 }
+
+impl std::ops::Drop for Spl {
+  fn drop(&mut self) {
+    println!("SPL  >>>>>>>>>>>>>>>>>>>>>>");
+  }
+}
