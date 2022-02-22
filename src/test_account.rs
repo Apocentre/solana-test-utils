@@ -1,5 +1,6 @@
 use futures::{stream, StreamExt};
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
+use solana_program_test::{tokio::sync::{Mutex}};
 use solana_sdk::{
   signature::{Keypair, Signer},
   native_token::sol_to_lamports,
@@ -26,7 +27,7 @@ impl TestAccount {
         let pt = Arc::clone(&pt);
 
         async move {
-          let mut lock = pt.lock().unwrap();
+          let mut lock = pt.lock().await;
           lock.transfer_sol(&account.pubkey(), sol_to_lamports(1_f64)).await
         }
       })
