@@ -1,4 +1,5 @@
-use std::sync::{Arc, Mutex};
+use std::sync::{Arc};
+use solana_program_test::{tokio::sync::{Mutex}};
 use anchor_spl::token::{TokenAccount};
 use anchor_lang::{
   AccountDeserialize,
@@ -29,7 +30,7 @@ impl Spl {
   }
 
   pub async fn get_token_account(&mut self, token_account: Pubkey) -> TokenAccount {
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     
     let account = lock_pt
       .context
@@ -57,7 +58,7 @@ impl Spl {
     )
     .unwrap();
 
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     lock_pt.process_transaction(&[ix], Some(&[token_mint_authority]))
       .await
       .unwrap();
@@ -80,7 +81,7 @@ impl Spl {
     )
     .unwrap();
 
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     lock_pt.process_transaction(&[ix], Some(&[authority]))
       .await
       .unwrap();
@@ -93,7 +94,7 @@ impl Spl {
     freeze_authority: Option<&Pubkey>,
     decimals: u8,
   ) {
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     let mint_rent = lock_pt.rent.minimum_balance(spl_token::state::Mint::LEN);
 
     let instructions = [
@@ -124,7 +125,7 @@ impl Spl {
     wallet_address: &Pubkey,
     spl_token_mint_address: &Pubkey,
   ) -> Pubkey {
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     let ix = create_associated_token_account(
       &lock_pt.context.payer.pubkey(),
       wallet_address,
@@ -192,7 +193,7 @@ impl Spl {
       .unwrap(),
     ];
 
-    let mut lock_pt = self.program_test.lock().unwrap();
+    let mut lock_pt = self.program_test.lock().await;
     lock_pt.process_transaction(&instructions, Some(&[mint_authority]))
       .await
       .unwrap();
