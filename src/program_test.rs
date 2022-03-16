@@ -4,7 +4,7 @@ use solana_sdk::{
   rent::{Rent},
   system_instruction,
   program_error::ProgramError,
-  clock::{Clock},
+  clock::{Clock, UnixTimestamp},
   pubkey::Pubkey,
   signature::{Keypair, Signer},
   borsh::{try_from_slice_unchecked},
@@ -13,7 +13,7 @@ use solana_sdk::{
 };
 use solana_program_test::{ProgramTestContext};
 use crate::{
-  time::{get_clock},
+  time::{get_clock, advance_clock_past_timestamp},
   tools::{clone_keypair, map_transaction_error}
 };
 
@@ -118,5 +118,9 @@ impl ProgramTest {
 
   pub async fn get_clock(&mut self) -> Clock {
     get_clock(&mut self.context).await
+  }
+
+  pub async fn advance_clock_past_timestamp(&mut self, unix_timestamp: UnixTimestamp) {
+    advance_clock_past_timestamp(&mut self.context, unix_timestamp).await
   }
 }
