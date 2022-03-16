@@ -77,13 +77,13 @@ impl ProgramTest {
     Ok(())
   }
 
-  pub async fn create_account(&mut self) -> Keypair {
+  pub async fn create_account(&mut self, space: u64) -> Keypair {
     let account = Keypair::new();
     let create_ix = system_instruction::create_account(
       &self.payer.pubkey(),
       &account.pubkey(),
       100_000_000_000_000,
-      0,
+      space,
       &system_program::ID,
     );
 
