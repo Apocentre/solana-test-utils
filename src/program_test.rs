@@ -1,6 +1,5 @@
 use solana_program_runtime::invoke_context::ProcessInstructionWithContext;
 use solana_sdk::{
-  system_program,
   rent::{Rent},
   system_instruction,
   program_error::ProgramError,
