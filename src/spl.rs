@@ -176,6 +176,24 @@ impl Spl {
     self.set_mint_authority(&mint_keypair, &mint_authority).await;
   }
 
+  pub async fn airdrop(
+    &mut self,
+    mint_account: &Pubkey,
+    mint_authority: &Keypair,
+    recipient: &Pubkey,
+  ) {
+    // 1. create a new associated token account
+    self.create_associated_account(recipient, &mint_account).await;
+
+    // 2. mint tokens to recipient
+    self.mint_tokens(
+      mint_account,
+      &mint_authority,
+      &Self::get_associated_token_address(recipient, &mint_account),
+      1
+    ).await;
+  }
+
   pub async fn set_mint_authority(
     &mut self,
     mint_keypair: &Keypair,
