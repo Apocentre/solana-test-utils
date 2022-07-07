@@ -180,18 +180,21 @@ impl Spl {
     &mut self,
     mint_account: &Pubkey,
     mint_authority: &Keypair,
-    recipient: &Pubkey,
+    recipients: &Vec<Keypair>,
+    amount: u64,
   ) {
-    // 1. create a new associated token account
-    self.create_associated_account(recipient, &mint_account).await;
+    // 2. mint tokens to recipients
+    for recipient in recipients {
+      // 1. create a new associated token account
+      self.create_associated_account(&recipient.pubkey(), &mint_account).await;
 
-    // 2. mint tokens to recipient
-    self.mint_tokens(
-      mint_account,
-      &mint_authority,
-      &Self::get_associated_token_address(recipient, &mint_account),
-      1
-    ).await;
+      self.mint_tokens(
+        mint_account,
+        &mint_authority,
+        &Self::get_associated_token_address(&recipient.pubkey(), &mint_account),
+        amount
+      ).await;
+    }
   }
 
   pub async fn set_mint_authority(
