@@ -13,6 +13,7 @@ use solana_sdk::{
   signature::{Keypair, Signer},
   system_instruction,
   program_pack::Pack,
+  program_error::ProgramError,
 };
 use crate::{
   program_test::ProgramTest,
@@ -70,7 +71,7 @@ impl Spl {
     to: &Pubkey,
     authority: &Keypair,
     amount: u64,
-  ) {
+  ) -> Result<(), ProgramError> {
     let ix = spl_token::instruction::transfer(
       &spl_token::id(),
       from,
@@ -82,9 +83,7 @@ impl Spl {
     .unwrap();
 
     let mut lock_pt = self.program_test.lock().await;
-    lock_pt.process_transaction(&[ix], Some(&[authority]))
-      .await
-      .unwrap();
+    lock_pt.process_transaction(&[ix], Some(&[authority])).await
   }
 
   pub async fn create_mint(
