@@ -1,8 +1,9 @@
 use std::sync::{Arc};
 use solana_program_test::{tokio::sync::{Mutex}};
-use anchor_spl::token::{TokenAccount};
+use anchor_spl::token::{Mint, TokenAccount};
 use anchor_lang::{
   AccountDeserialize,
+  solana_program::program_option::COption,
 };
 use spl_associated_token_account::{
   instruction::create_associated_token_account,
@@ -14,6 +15,7 @@ use solana_sdk::{
   system_instruction,
   program_pack::Pack,
   program_error::ProgramError,
+  account::AccountSharedData,
 };
 use crate::{
   program_test::ProgramTest,
@@ -119,6 +121,40 @@ impl Spl {
       .unwrap();
   }
 
+  /// This is different from create_mint which follows the typical way of creating the a new mint account.
+  /// Sometime we might not know the priv key of a mint account e.g. Wrapped Sol mint account but we want
+  /// it to be part of the test execution context.
+  pub async fn set_mint_account(
+    &mut self,
+    address: &Pubkey,
+    lamports: u64,
+    supply: u64,
+    decimals: u8,
+  ) {
+    let mut mint_account = AccountSharedData::new(
+      lamports,
+      Mint::LEN,
+      &spl_token::id(),
+    );
+
+    let mint =  spl_token::state::Mint {
+      mint_authority: COption::None,
+      supply,
+      decimals,
+      is_initialized: true,
+      freeze_authority: COption::None,
+    };
+
+    let mut data = [0_u8; Mint::LEN];
+    mint.pack_into_slice(&mut data);
+    mint_account.set_data(data.into());
+
+    let mut pt = self.program_test.lock().await;
+    pt.context.set_account(
+      &address,
+      &mint_account,
+    );
+  }
   pub async fn create_associated_account(
     &mut self,
     wallet_address: &Pubkey,
