@@ -4,6 +4,7 @@ use solana_sdk::{
   system_instruction,
   program_error::ProgramError,
   clock::{Clock, UnixTimestamp},
+  account::AccountSharedData,
   pubkey::Pubkey,
   signature::{Keypair, Signer},
   borsh::{try_from_slice_unchecked},
@@ -113,6 +114,16 @@ impl ProgramTest {
     account.data.drain(0..8);
     
     try_from_slice_unchecked::<T>(&account.data).unwrap()
+  }
+
+  pub async fn set_account(
+    &mut self,
+    address: &Pubkey,
+    lamports: u64,
+    space: usize,
+    owner: &Pubkey,
+  ) {
+    self.context.set_account(address, &AccountSharedData::new(lamports, space, owner));
   }
 
   pub async fn get_clock(&mut self) -> Clock {
