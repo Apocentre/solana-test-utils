@@ -116,7 +116,7 @@ impl ProgramTest {
     try_from_slice_unchecked::<T>(&account.data).unwrap()
   }
 
-  pub async fn set_account(
+  pub fn set_account(
     &mut self,
     address: &Pubkey,
     lamports: u64,
