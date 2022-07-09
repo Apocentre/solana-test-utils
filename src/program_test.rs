@@ -77,12 +77,12 @@ impl ProgramTest {
     Ok(())
   }
 
-  pub async fn create_account(&mut self, space: u64, owner: &Pubkey) -> Keypair {
+  pub async fn create_account(&mut self, lamports: u64, space: u64, owner: &Pubkey) -> Keypair {
     let account = Keypair::new();
     let create_ix = system_instruction::create_account(
       &self.payer.pubkey(),
       &account.pubkey(),
-      100_000_000_000_000,
+      lamports,
       space,
       owner,
     );

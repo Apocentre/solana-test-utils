@@ -28,7 +28,7 @@ impl TestAccount {
 
         async move {
           let mut lock = pt.lock().await;
-          lock.transfer_sol(&account.pubkey(), sol_to_lamports(1_000_000_f64)).await
+          lock.transfer_sol(&account.pubkey(), sol_to_lamports(100_f64)).await
         }
       })
       .await;
