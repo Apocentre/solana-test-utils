@@ -1,6 +1,6 @@
 [package]
 name = "solana-test-utils"
-version = "0.2.10"
+version = "0.2.11"
 edition = "2018"
 authors = ["Pavlos Polianidis <info@apocentre.com>"]
 repository = "https://github.com/Apocentre/solana-safe-math"
@@ -25,3 +25,4 @@ borsh = "0.9"
 rs_merkle = "1.1.0"
 futures = "0.3"
 solana-program-runtime = "1.9.6"
+bytemuck = "1.10.0"

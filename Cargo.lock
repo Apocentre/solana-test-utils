@@ -3684,12 +3684,13 @@ dependencies = [
 
 [[package]]
 name = "solana-test-utils"
-version = "0.2.10"
+version = "0.2.11"
 dependencies = [
  "anchor-lang",
  "anchor-spl",
  "bincode",
  "borsh",
+ "bytemuck",
  "futures",
  "rs_merkle",
  "solana-program-runtime",
