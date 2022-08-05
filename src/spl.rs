@@ -130,6 +130,7 @@ impl Spl {
     lamports: u64,
     supply: u64,
     decimals: u8,
+    mint_authority: COption<Pubkey>,
   ) {
     let mut mint_account = AccountSharedData::new(
       lamports,
@@ -138,7 +139,7 @@ impl Spl {
     );
 
     let mint =  spl_token::state::Mint {
-      mint_authority: COption::None,
+      mint_authority,
       supply,
       decimals,
       is_initialized: true,
@@ -155,6 +156,7 @@ impl Spl {
       &mint_account,
     );
   }
+
   pub async fn create_associated_account(
     &mut self,
     wallet_address: &Pubkey,
