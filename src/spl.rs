@@ -128,9 +128,9 @@ impl Spl {
     &mut self,
     address: &Pubkey,
     lamports: u64,
+    mint_authority: COption<Pubkey>,
     supply: u64,
     decimals: u8,
-    mint_authority: COption<Pubkey>,
   ) {
     let mut mint_account = AccountSharedData::new(
       lamports,
