@@ -7,3 +7,4 @@ pub use spl_associated_token_account;
 pub mod spl;
 pub mod utils;
 pub mod serialization;
+pub use spl_token;
