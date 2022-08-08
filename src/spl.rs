@@ -268,8 +268,6 @@ impl Spl {
       )
       .await
       .unwrap();
-
-      println!("Start wrapped");
     }
   }
 
