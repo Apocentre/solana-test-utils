@@ -28,7 +28,7 @@ impl TestAccount {
 
         async move {
           let mut lock = pt.lock().await;
-          lock.airdrop(&account.pubkey(), sol_to_lamports(100_f64)).await
+          lock.airdrop(&account.pubkey(), sol_to_lamports(10_000_f64)).await
         }
       })
       .await;
