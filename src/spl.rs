@@ -251,15 +251,20 @@ impl Spl {
       &wrapped_sol_mint,
     ).await;
 
+    println!("ATA created {:?}", ata);
+
     // 2. Transfer SOL to the above ATA
     {
       let mut lock_pt = self.program_test.lock().await;
       lock_pt.transfer_sol(&wallet, &ata, lamports).await;
     }
 
+    println!("SOL transferred");
+
     // 3. Send sync native IX
     {
       let mut lock_pt = self.program_test.lock().await;
+      println!("Start wrapping");
       lock_pt.process_transaction(
         &[
           sync_native(&spl_token::id(), &ata).unwrap(),
@@ -268,6 +273,8 @@ impl Spl {
       )
       .await
       .unwrap();
+
+      println!("Start wrapped");
     }
   }
 
