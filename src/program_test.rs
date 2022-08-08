@@ -94,7 +94,7 @@ impl ProgramTest {
     account
   }
 
-  pub async fn transfer_sol(&mut self, to_account: &Pubkey, lamports: u64) {
+  pub async fn airdrop(&mut self, to_account: &Pubkey, lamports: u64) {
     let transfer_ix = system_instruction::transfer(
       &self.payer.pubkey(),
       to_account,
@@ -106,6 +106,23 @@ impl ProgramTest {
       .unwrap();
   }
 
+  pub async fn transfer_sol(
+    &mut self,
+    from_account: &Keypair,
+    to_account: &Pubkey,
+    lamports: u64
+  ) {
+    let transfer_ix = system_instruction::transfer(
+      &from_account.pubkey(),
+      to_account,
+      lamports
+    );
+
+    self.process_transaction(&[transfer_ix], Some(&[&from_account]))
+      .await
+      .unwrap();
+  }
+  
   pub async fn get_account<T>(&mut self, account: Pubkey) -> T
   where T: borsh::de::BorshDeserialize
   {

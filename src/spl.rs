@@ -254,7 +254,7 @@ impl Spl {
     // 2. Transfer SOL to the above ATA
     {
       let mut lock_pt = self.program_test.lock().await;
-      lock_pt.transfer_sol(&ata, lamports).await;
+      lock_pt.transfer_sol(&wallet, &ata, lamports).await;
     }
 
     // 3. Send sync native IX
