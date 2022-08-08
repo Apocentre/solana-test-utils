@@ -5,6 +5,11 @@ use anchor_lang::{
   AccountDeserialize,
   solana_program::program_option::COption,
 };
+use spl_token::instruction::{
+  set_authority,
+  sync_native,
+  AuthorityType,
+};
 use spl_associated_token_account::{
   instruction::create_associated_token_account,
   get_associated_token_address,
@@ -22,7 +27,7 @@ use crate::{
 };
 
 pub struct Spl {
-  pub program_test: Arc<Mutex<ProgramTest>>,
+  pub program_test: Arc<Mutex<ProgramTest>>
 }
 
 impl Spl {
@@ -234,17 +239,49 @@ impl Spl {
     }
   }
 
+  pub async fn wrap_sol(
+    &mut self,
+    wrapped_sol_mint: &Pubkey,
+    wallet: &Keypair,
+    lamports: u64,
+  ) {
+    // 1. Create a new ATA for the wrapped SOL Mint
+    let ata = self.create_associated_account(
+      &wallet.pubkey(),
+      &wrapped_sol_mint,
+    ).await;
+
+    // 2. Transfer SOL to the above ATA
+    {
+      let mut lock_pt = self.program_test.lock().await;
+      lock_pt.transfer_sol(&ata, lamports).await;
+    }
+
+    // 3. Send sync native IX
+    {
+      let mut lock_pt = self.program_test.lock().await;
+      lock_pt.process_transaction(
+        &[
+          sync_native(&spl_token::id(), &ata).unwrap(),
+        ],
+        Some(&[wallet])
+      )
+      .await
+      .unwrap();
+    }
+  }
+
   pub async fn set_mint_authority(
     &mut self,
     mint_keypair: &Keypair,
     mint_authority: &Keypair,
   ) {
     let instructions = [
-      spl_token::instruction::set_authority(
+      set_authority(
         &spl_token::id(),
         &mint_keypair.pubkey(),
         None,
-        spl_token::instruction::AuthorityType::MintTokens,
+        AuthorityType::MintTokens,
         &mint_authority.pubkey(),
         &[&mint_authority.pubkey()]
       )
