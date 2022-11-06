@@ -13,7 +13,7 @@ use solana_sdk::{
 };
 use solana_program_test::{ProgramTestContext};
 use crate::{
-  time::{get_clock, advance_clock_past_timestamp},
+  time::{get_clock, advance_clock_past_timestamp, advance_clock_by_slots},
   tools::{clone_keypair, map_transaction_error}
 };
 
@@ -149,5 +149,9 @@ impl ProgramTest {
 
   pub async fn advance_clock_past_timestamp(&mut self, unix_timestamp: UnixTimestamp) {
     advance_clock_past_timestamp(&mut self.context, unix_timestamp).await
+  }
+
+  pub async fn advance_clock_by_slots(&mut self, slots: u64) {
+    advance_clock_by_slots(&mut self.context, slots).await
   }
 }

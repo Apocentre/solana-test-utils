@@ -48,3 +48,10 @@ pub async fn advance_clock(context: &mut ProgramTestContext) {
   let clock = get_clock(context).await;
   context.warp_to_slot(clock.slot + 2).unwrap();
 }
+
+#[allow(dead_code)]
+pub async fn advance_clock_by_slots(context: &mut ProgramTestContext, slots: u64) {
+  let clock = get_clock(context).await;
+  context.warp_to_slot(clock.slot + slots).unwrap();
+}
+
