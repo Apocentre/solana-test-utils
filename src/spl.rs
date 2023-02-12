@@ -196,6 +196,7 @@ impl Spl {
     &mut self,
     mint_keypair: &Keypair,
     mint_authority: &Keypair,
+    freeze_authority: Option<&Pubkey>,
     recipient: &Pubkey,
     disable_mint_authority: bool,
   ) {
@@ -203,7 +204,7 @@ impl Spl {
     self.create_mint(
       mint_keypair,
       &mint_authority.pubkey(),
-      None,
+      freeze_authority,
       0
     ).await;
 
