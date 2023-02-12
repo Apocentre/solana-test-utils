@@ -1,6 +1,6 @@
 [package]
 name = "solana-test-utils"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2018"
 authors = ["Pavlos Polianidis <info@apocentre.com>"]
 repository = "https://github.com/Apocentre/solana-safe-math"
@@ -15,7 +15,7 @@ license-file = "LICENSE"
 
 [dependencies]
 bincode = "1.3.2"
-solana-sdk = "1.10.29"
+solana-sdk = "1.15.1"
 solana-program-test = "=1.15.1"
 anchor-lang = { version = "0.26.0", features = ["init-if-needed"] }
 anchor-spl = "0.26.0"
