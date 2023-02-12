@@ -8,3 +8,4 @@ pub mod spl;
 pub mod utils;
 pub mod serialization;
 pub use spl_token;
+pub mod metaplex;
