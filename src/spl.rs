@@ -197,6 +197,7 @@ impl Spl {
     mint_keypair: &Keypair,
     mint_authority: &Keypair,
     recipient: &Pubkey,
+    disable_mint_authority: bool,
   ) {
     // 1. create a new Mint account with 0 decimals
     self.create_mint(
@@ -218,8 +219,10 @@ impl Spl {
       1
     ).await;
 
-    // 4. disable future minting by setting the mint authority to none
-    self.set_mint_authority(&mint_keypair, &mint_authority).await;
+    if disable_mint_authority {
+      // 4. disable future minting by setting the mint authority to none
+      self.set_mint_authority(&mint_keypair, &mint_authority).await;
+    }
   }
 
   pub async fn airdrop(
