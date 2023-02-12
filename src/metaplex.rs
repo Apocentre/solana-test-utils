@@ -7,7 +7,7 @@ use solana_sdk::{
 use mpl_token_metadata::{
   state::{Uses, Creator, Collection},
   instruction::{
-    create_metadata_accounts_v3,
+    create_metadata_accounts_v3, set_and_verify_collection,
   },
 };
 use crate::{
@@ -22,10 +22,19 @@ pub struct CreateMetadataAccounts<'a> {
   pub update_authority: &'a Keypair,
 }
 
+pub struct SetAndVerifyCollectionAccounts<'a> {
+  pub metadata_account: Pubkey,
+  pub collection_authority: &'a Keypair,
+  pub payer: &'a Keypair,
+  pub update_authority: Pubkey,
+  pub collection_mint: Pubkey,
+  pub collection_metadata: Pubkey,
+  pub collection_master_edition: Pubkey,
+}
+
 pub struct Metaplex {
   pub program_test: Arc<Mutex<ProgramTest>>
 }
-
 
 impl Metaplex {
   pub fn new(program_test: Arc<Mutex<ProgramTest>>) -> Self {
@@ -71,6 +80,30 @@ impl Metaplex {
       accounts.mint_authority,
       accounts.payer,
       accounts.update_authority
+    ];
+    lock_pt.process_transaction(&[ix], Some(signers)).await.unwrap();
+  }
+
+  pub async fn set_and_verify_collection<'a>(
+    &mut self,
+    accounts: SetAndVerifyCollectionAccounts<'a>,
+  ) {
+    let ix = set_and_verify_collection(
+      mpl_token_metadata::ID,
+      accounts.metadata_account,
+      accounts.collection_authority.pubkey(),
+      accounts.payer.pubkey(),
+      accounts.update_authority,
+      accounts.collection_mint,
+      accounts.collection_metadata,
+      accounts.collection_master_edition,
+      None,
+    );
+
+    let mut lock_pt = self.program_test.lock().await;
+    let signers = &[
+      accounts.collection_authority,
+      accounts.payer,
     ];
     lock_pt.process_transaction(&[ix], Some(signers)).await.unwrap();
   }
