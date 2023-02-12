@@ -5,10 +5,13 @@ use anchor_lang::{
   AccountDeserialize,
   solana_program::program_option::COption,
 };
-use spl_token::instruction::{
-  set_authority,
-  sync_native,
-  AuthorityType,
+use spl_token::{
+  id,
+  instruction::{
+    set_authority,
+    sync_native,
+    AuthorityType,
+  },
 };
 use spl_associated_token_account::{
   instruction::create_associated_token_account,
@@ -171,7 +174,8 @@ impl Spl {
     let ix = create_associated_token_account(
       &lock_pt.context.payer.pubkey(),
       wallet_address,
-      spl_token_mint_address
+      spl_token_mint_address,
+      &id(),
     );
 
     lock_pt.process_transaction(&[ix], None)
