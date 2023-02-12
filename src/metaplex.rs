@@ -7,7 +7,7 @@ use solana_sdk::{
 use mpl_token_metadata::{
   state::{Uses, Creator, Collection},
   instruction::{
-    create_metadata_accounts_v3, set_and_verify_collection,
+    create_metadata_accounts_v3, set_and_verify_collection, create_master_edition_v3
   },
 };
 use crate::{
@@ -30,6 +30,16 @@ pub struct SetAndVerifyCollectionAccounts<'a> {
   pub collection_mint: Pubkey,
   pub collection_metadata: Pubkey,
   pub collection_master_edition: Pubkey,
+}
+
+
+pub struct CreateMasterEditionAccounts<'a> {
+  pub edition: Pubkey,
+  pub mint: Pubkey,
+  pub update_authority: &'a Keypair,
+  pub mint_authority: &'a Keypair,
+  pub metadata_account: Pubkey,
+  pub payer: &'a Keypair,
 }
 
 pub struct Metaplex {
@@ -80,6 +90,30 @@ impl Metaplex {
       accounts.mint_authority,
       accounts.payer,
       accounts.update_authority
+    ];
+    lock_pt.process_transaction(&[ix], Some(signers)).await.unwrap();
+  }
+
+  pub async fn create_master_edition<'a>(
+    &mut self,
+    accounts: CreateMasterEditionAccounts<'a>,
+  ) {
+    let ix = create_master_edition_v3(
+      mpl_token_metadata::ID,
+      accounts.edition,
+      accounts.mint,
+      accounts.update_authority.pubkey(),
+      accounts.mint_authority.pubkey(),
+      accounts.metadata_account,
+      accounts.payer.pubkey(),
+      Some(0),
+    );
+
+    let mut lock_pt = self.program_test.lock().await;
+    let signers = &[
+      accounts.update_authority,
+      accounts.mint_authority,
+      accounts.payer,
     ];
     lock_pt.process_transaction(&[ix], Some(signers)).await.unwrap();
   }
