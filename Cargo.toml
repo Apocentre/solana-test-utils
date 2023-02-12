@@ -1,6 +1,6 @@
 [package]
 name = "solana-test-utils"
-version = "0.3.4"
+version = "0.3.5"
 edition = "2018"
 authors = ["Pavlos Polianidis <info@apocentre.com>"]
 repository = "https://github.com/Apocentre/solana-safe-math"
@@ -15,8 +15,8 @@ license-file = "LICENSE"
 
 [dependencies]
 bincode = "1.3.2"
-solana-sdk = "=1.13.5"
-solana-program-test = "=1.13.5"
+solana-sdk = "~1.14.8"
+solana-program-test = "~1.14.8"
 anchor-lang = { version = "0.26.0", features = ["init-if-needed"] }
 anchor-spl = "0.26.0"
 spl-token = { version = "3.5.0", features = ["no-entrypoint"] }
@@ -24,6 +24,6 @@ spl-associated-token-account = { version = "1.1.1", features = ["no-entrypoint"]
 borsh = "0.9"
 rs_merkle = "1.1.0"
 futures = "0.3"
-solana-program-runtime = "=1.13.5"
+solana-program-runtime = "~1.14.8"
 bytemuck = "1.10.0"
 mpl-token-metadata = { version = "1.4.3", features = ["no-entrypoint"] }
