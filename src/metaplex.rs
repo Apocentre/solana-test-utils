@@ -18,8 +18,8 @@ pub struct CreateMetadataAccounts<'a> {
   pub mint: Pubkey,
   pub mint_authority: &'a Keypair,
   pub metadata_account: Pubkey,
-  pub payer: Pubkey,
-  pub update_authority: Pubkey,
+  pub payer: &'a Keypair,
+  pub update_authority: &'a Keypair,
 }
 
 pub struct Metaplex {
@@ -52,8 +52,8 @@ impl Metaplex {
       accounts.metadata_account,
       accounts.mint,
       accounts.mint_authority.pubkey(),
-      accounts.payer,
-      accounts.update_authority,
+      accounts.payer.pubkey(),
+      accounts.update_authority.pubkey(),
       name,
       symbol,
       uri,
@@ -67,6 +67,11 @@ impl Metaplex {
     );
   
     let mut lock_pt = self.program_test.lock().await;
-    lock_pt.process_transaction(&[ix], Some(&[accounts.mint_authority])).await.unwrap();
+    let signers = &[
+      accounts.mint_authority,
+      accounts.payer,
+      accounts.update_authority
+    ];
+    lock_pt.process_transaction(&[ix], Some(signers)).await.unwrap();
   }
 }
